@@ -12,7 +12,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-var bot = new TelegramBotClient(":AAFkUxS-KKn59zj38zD3y1AYjCiksNhjQjY");
+var bot = new TelegramBotClient(":9200916222:AAFkUxS-KKn59zj38zD3y1AYjCiksNhjQjY");
 
 var userDataService = new UserDataService();
 var waitingForNote = new HashSet<long>();
@@ -79,15 +79,16 @@ async Task UpdateHandler(
 
         if (category != "")
         {
-            await SendDish(bot, message.Chat.Id, category, cancellationToken);
+            await SendDish(
+                bot,
+                message.Chat.Id,
+                message.From!.Id,
+                category,
+                cancellationToken
+            );
         }
         else
         {
-            await bot.SendMessage(
-                message.Chat.Id,
-                "Выбери категорию с помощью кнопок ниже 👇",
-                cancellationToken: cancellationToken
-            );
         }
     }
 }
