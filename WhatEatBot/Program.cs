@@ -3,8 +3,19 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Telegram.Bot;
+using Telegram.Bot.Polling;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
-var bot = new TelegramBotClient("8917095944:AAFhsoJtpmK-L1QAFHWxgxWtyHpZpsabpMk");
+var bot = new TelegramBotClient(":AAFkUxS-KKn59zj38zD3y1AYjCiksNhjQjY");
+
+var userDataService = new UserDataService();
+var waitingForNote = new HashSet<long>();
 
 using var cts = new CancellationTokenSource();
 
@@ -84,6 +95,7 @@ async Task UpdateHandler(
 async Task SendDish(
     ITelegramBotClient bot,
     long chatId,
+    long userId,
     string category,
     CancellationToken cancellationToken)
 {
@@ -246,7 +258,12 @@ async Task SendDish(
     };
 
     string dish = dishes[category][Random.Shared.Next(dishes[category].Length)];
+    var user = userDataService.GetUser(userId);
 
+    user.LastDish = dish;
+    user.Note = "";
+
+    userDataService.Save();
     await bot.SendMessage(
         chatId,
         $"🎲 Категория: {category}\n\n" +
